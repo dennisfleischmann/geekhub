@@ -1,0 +1,14 @@
+{
+  "fitbit": {
+    "appType": "app",
+    "appDisplayName": "geekhub-fitbit-trackme",
+    "wipeColor": "#e91e63",
+    "requestedPermissions": [
+      "access_heart_rate"
+    ],
+    "buildTargets": [
+      "higgs",
+      "meson"
+    ]
+  }
+}
