@@ -1,16 +1,7 @@
 # geekhub
 
 
-# Example for stream description
-data stream description;
 
 ```
-hub subscribe AF123, ..
-hub exec { video =>
- event.tranform(VIDEO_FORMAT=XY)
-}
-hub exec AF123 ALGO_VERBRECHER_DETECTION
-hub exec { img  =>
- (img, "Einbrecher" 
-}
+./geekhub-sensors/geekhub-sensors-measure --freq 100 --exec "/opt/geekhub/geekhub-sensors/geekhub-sensors-test" | geekhub-publisher/geekhub-pub-sensor --topic U01.sensors.keller_temp_hum --hub geekhub-1:8082
 ```
