@@ -1,0 +1,4 @@
+#!/bin/bash
+temperature=$(printf '%s\n' $(echo "scale=2; 25 + ($RANDOM / 32767)*0.1 * 35" | bc ))
+humidity=$(printf '%s\n' $(echo "scale=2; 50 + ($RANDOM / 32767)*0.1 * 35" | bc ))
+echo { \"time\": \"$(date)\", \"temperature\" : \"${temperature}\*", \"humidity\": \"${humidity}\%"  }

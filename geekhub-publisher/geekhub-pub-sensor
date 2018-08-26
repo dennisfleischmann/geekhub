@@ -1,0 +1,48 @@
+#!/bin/bash
+
+# Set default values
+HOSTNAME=$(hostname)
+
+while [[ $# > 1 ]]
+do
+key="$1"
+
+case $key in
+    --host)
+    HOSTNAME="$2"
+    shift # past argument
+    ;;
+    --hub)
+    HUB="$2"
+    shift # past argument
+    ;;
+    --topic)
+    TOPIC="$2"
+    shift # past argument
+    ;;
+    --default)
+    DEFAULT=YES
+    ;;
+    *)
+            # unknown option
+    ;;
+esac
+shift # past argument or value
+done
+
+
+#HOSTNAME=$(hostname)
+#TOPIC=U01.sensors.keller_temp_hum
+#HUB=geekhub-1:8082
+
+
+while read DATA
+do
+    DATE=$(date)
+    curl -s -X POST \
+    	-H "Content-Type: application/vnd.kafka.json.v2+json" \
+    	-H "Accept: application/vnd.kafka.v2+json" \
+    	--data "{\"records\":[{\"value\": ${DATA} } ]}" \
+    	http://${HUB}/topics/${TOPIC} > /dev/null
+
+done < "${1:-/dev/stdin}"
