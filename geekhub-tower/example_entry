@@ -1,0 +1,21 @@
+{
+    "webid": "person1234",
+    "keys" : [
+        "key-in" : { "privatekey": "hidden", "certificate": "certABC" },
+        "key-out" : { "privatekey": "hidden", "certificate": "certABC" }
+    ],
+
+    "streams": [
+        { "streamid": "eK0w0N", "description": "smartwatch gps stream", "service": "kafka", "location": "kafka1:9092", keyid: "key-in", "ttl": "7d" },
+        { "streamid": "Ei3cie", "description": "car locaton" stream, "service": "kafka", "location": "kafka1:9092", keyid: "key-in", "ttl": "7d" },
+        { "streamid": "eXE001", "description": "termo1", "service": kafka, "location": "endpoint1", keyid: "key-in", "ttl": "" },
+        { "streamid": "eXE002", "description": "termo2", "service": kafka, "location": "endpoint1", keyid: "key-in", "ttl": "" },
+        { "streamid": "eXE003", "description": "termo3", "service": kafka, "location": "endpoint1", keyid: "key-in", "ttl": "" },
+
+    "active_stream_processors": [
+        { "processorid": "te0Joh", "description": "compress spikes", "access_token": "", verify_hub": "yes", "streamid": "" },
+        { "processorid": "yei0Ei", "description": "persist spikes", "access_token": "", "verify_hub": "yes", "streamid": "" },
+        { "processorid": "00001", "description": "daemmung-check", "access_token": "", "verify_hub": "yes", "streamid": "" },
+
+    ]
+}
