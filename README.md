@@ -4,6 +4,7 @@
 ```
 git clone
 docker-compose up
+nodejs ./geekhub-restapi/server.js
 ```
 
 ## Ingest some records into geekhub
