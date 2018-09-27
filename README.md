@@ -1,21 +1,20 @@
 # geekhub
 
-## Run local standalone geekub
+## Run geekhub as standalone locally
 ```
 git clone
 docker-compose up
 ```
 
-
-## Use geekhub
+## Ingest some records into geekhub
 ```
-./geekhub-sensors/geekhub-sensors-measure \
-    --freq 100 \
-    --exec "/opt/geekhub/geekhub-sensors/geekhub-sensors-test" \
-   | geekhub-publisher/geekhub-pub-sensor \
-        --topic U01.sensors.keller_temp_hum \
-        --hub geekhub-1:8082
-        --encryption-key {path-to-key}
+curl -H "Content-Type: application/json" -X POST localhost:5000/hubs/localhost:9092/topics/test1 -d '{"test":"4"}'
+
 ```
 
 
+## Use the data from geekhub
+```
+curl localhost:5000/hubs/localhost:9092/topics/test1
+
+```
