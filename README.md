@@ -13,7 +13,6 @@ curl -H "Content-Type: application/json" -X POST localhost:5000/hubs/localhost:9
 
 ```
 
-
 ## Use the data from geekhub
 ```
 curl localhost:5000/hubs/localhost:9092/topics/test1

@@ -77,17 +77,14 @@ exports.consume =  function(req, res){
 
   });
 
-
 };
 exports.produce = function(req, res){
-
+  console.log (req.body )
   params = {
     broker: req.params.hub,
     topic: req.params.topic,
     message: req.body
   }
-
-  console.log (req.body )
 
   var KeyedMessage = kafka.KeyedMessage,
       client = new kafka.KafkaClient({kafkaHost: params.broker });
@@ -102,11 +99,7 @@ exports.produce = function(req, res){
           res.end()
       });
   });
-
-
   producer.on('error', function (err) {})
-
-
 };
 exports.delete = function(req, res){
 };
