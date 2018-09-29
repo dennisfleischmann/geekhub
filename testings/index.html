@@ -1,0 +1,49 @@
+<html>
+<head>
+    <title>Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+</head>
+
+<body>
+<div id="app">
+    <p>{{message}}</p>
+    <ul>
+        <li v-for="element in listElements">{{element}}</li>
+    </ul>
+</div>
+
+<script>
+
+  var app = new Vue({
+    el: '#app',
+    data: {
+      listElements: {},
+      message: 'hi there..'
+    },
+    mounted: function(){
+      console.log('I am mounted')
+
+      const Http = new XMLHttpRequest();
+      const url='http://localhost:5000/hubs/localhost:9092/topics/test1';
+      Http.open("GET", url);
+      Http.send();
+      Http.onreadystatechange = (e) => {
+        console.log(Http.responseText)
+
+        let bla = Http.responseText.replace(/}/g, '},')
+        bla = bla.slice(0, -2)
+        bla = '{"something": [' + bla + ']}'
+        let leJson = JSON.parse(bla)
+
+        this.listElements = leJson.something
+      }
+
+    }
+  })
+
+
+
+
+</script>
+</body>
+</html>
