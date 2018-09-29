@@ -2,7 +2,9 @@
 
 ## Run geekhub as standalone locally
 ```
-git clone
+git clone https://github.com/kfleischmann/geekhub.git
+cd geekhub
+npm install
 docker-compose up
 nodejs ./geekhub-restapi/server.js
 ```
