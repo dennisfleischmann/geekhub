@@ -2,6 +2,7 @@
 <head>
     <title>Test</title>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+    <script src="https://unpkg.com/vue-light-timeline@1.0.1/index.js"></script>
 </head>
 
 <body>
@@ -10,15 +11,43 @@
     <ul>
         <li v-for="element in listElements">{{element}}</li>
     </ul>
+
+    <p>
+        If you send items with those properties a timeline will appear.
+        <br>
+        <small>sendToGeekhub(['timeline' => true, 'tag' => date(DATE_RFC822), 'content' => 'Visited: ' . $_SERVER['REQUEST_URI']]);</small>
+    </p>
+    <light-timeline :items='items'></light-timeline>
 </div>
 
 <script>
 
+  Vue.component('light-timeline', vueLightTimeline.Timeline)
+
+  const theme = 'red';
   var app = new Vue({
     el: '#app',
     data: {
       listElements: {},
-      message: 'hi there..'
+      message: 'hi there..',
+      items: [
+        {
+          tag: '2018-01-12',
+          content: 'hallo'
+        },
+        {
+          tag: '2018-01-13',
+          color: '#dcdcdc',
+          type: 'circle',
+          content: 'world'
+        },
+        {
+          type: 'star',
+          tag: '2018-01-14',
+          htmlMode: true,
+          content: `<div style="color: ${theme};"> =v = </div>`
+        }
+      ]
     },
     mounted: function(){
       console.log('I am mounted')
@@ -36,14 +65,11 @@
         let leJson = JSON.parse(bla)
 
         this.listElements = leJson.something
+        this.items = this.listElements.filter(v => v.timeline)
       }
 
     }
   })
-
-
-
-
 </script>
 </body>
 </html>
