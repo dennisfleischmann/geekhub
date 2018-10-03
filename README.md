@@ -45,7 +45,34 @@ cat ~/Pictures/Hamburg_Hafen_3.jpg | \
 
 # read images and write files
 curl localhost:5000/hubs/localhost:9092/topics/myimage_stream -N | \
-  while read -r l; do echo $l|base64 -d > image_$(date +%s+%3N.jpg) ; done
+ while read -r l; do echo $l|base64 -d > image_$(date +%s+%3N.jpg) ; done
 
 ```
 
+## Use geekhub to transfer webcam images
+
+```
+# capture image from webcam
+fswebcam - | \
+  base64 -w 0 | \
+  curl -H "Content-Type: application/raw" \
+  -X POST localhost:5000/hubs/localhost:9092/topics/myimage_stream --data-binary @-
+
+# read images and write files
+curl localhost:5000/hubs/localhost:9092/topics/myimage_stream -N | \
+ while read -r l; do echo $l|base64 -d > image_$(date +%s+%3N.jpg) ; done
+
+```
+
+## Use geekhub to stream webcam images every second
+```
+
+# create webcam image stream
+while sleep 1; do fswebcam - |   base64 -w 0 |   curl -H "Content-Type: application/raw"  \
+  -X POST localhost:5000/hubs/localhost:9092/topics/webcam --data-binary @-; done
+
+
+# read the webcam image stream
+curl localhost:5000/hubs/localhost:9092/topics/webcam -N | while read -r l; do echo $l|base64 -d > image.jpg ; done
+
+```
