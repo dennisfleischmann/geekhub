@@ -76,3 +76,17 @@ while sleep 1; do fswebcam - |   base64 -w 0 |   curl -H "Content-Type: applicat
 curl localhost:5000/hubs/localhost:9092/topics/webcam -N | while read -r l; do echo $l|base64 -d > image.jpg ; done
 
 ```
+
+
+## Encrypt data end-to-end
+```
+
+while sleep 1; do fswebcam - | openssl enc -aes-256-cbc -pass pass:secret | base64 -w 0 |  \
+  curl -H "Content-Type: application/raw"    -X POST localhost:5000/hubs/localhost:9092/topics/webcam_enc --data-binary @-; done
+
+
+
+curl localhost:5000/hubs/localhost:9092/topics/webcam_enc -N | while read -r l; do echo $l|base64 -d| \
+  openssl enc -d -aes-256-cbc -pass pass:secret > image.jpg ; done
+
+```
