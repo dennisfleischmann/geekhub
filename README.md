@@ -37,11 +37,15 @@ curl localhost:5000/hubs/localhost:9092/topics/orders  -H groupid:mapviewer
 
 ```
 # write
-cat ~/Pictures/Hamburg_Hafen_3.jpg | base64 -w 0 | curl -H "Content-Type: application/raw" -X POST localhost:5000/hubs/localhost:9092/topics/myimage_stream --data-binary @-
+cat ~/Pictures/Hamburg_Hafen_3.jpg | \
+  base64 -w 0 | \
+  curl -H "Content-Type: application/raw" \
+  -X POST localhost:5000/hubs/localhost:9092/topics/myimage_stream --data-binary @-
 
 
 # read images and write files
-curl localhost:5000/hubs/localhost:9092/topics/myimage_stream -N | while read -r l; do echo $l|base64 -d > image_$(date +%s+%3N.jpg) ; done
+curl localhost:5000/hubs/localhost:9092/topics/myimage_stream -N | \
+  while read -r l; do echo $l|base64 -d > image_$(date +%s+%3N.jpg) ; done
 
 ```
 
