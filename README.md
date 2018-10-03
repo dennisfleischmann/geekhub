@@ -1,5 +1,9 @@
 # geekhub
 
+# Tested
+Docker = 17.12.1
+Docker-Compose = 1.17.1
+
 ## Run geekhub as standalone locally
 ```
 git clone
@@ -13,21 +17,31 @@ curl -H "Content-Type: application/json" -X POST localhost:5000/hubs/localhost:9
 
 ```
 
-## Use the data from geekhub
+## Use geekhub and transfer texts, json, xml, ..
+
+### Use a cursor
 ```
-# stat from beginning
-curl localhost:5000/hubs/localhost:9092/topics/orders -H offset:start
-
-
-# start from ending
-curl localhost:5000/hubs/localhost:9092/topics/orders -H offset:end
+curl localhost:5000/hubs/localhost:9092/topics/orders -H cursor:start
+curl localhost:5000/hubs/localhost:9092/topics/orders -H cursor:end
 
 ```
 
-## Use the same data from different clients
+### Use geekhub with different devices with their cursor
 ```
 curl localhost:5000/hubs/localhost:9092/topics/orders  -H groupid:tableclient
 curl localhost:5000/hubs/localhost:9092/topics/orders  -H groupid:mapviewer
 
+```
+
+## Use geekhub to transfer images
 
 ```
+# write
+cat ~/Pictures/Hamburg_Hafen_3.jpg | base64 -w 0 | curl -H "Content-Type: application/raw" -X POST localhost:5000/hubs/localhost:9092/topics/myimage_stream --data-binary @-
+
+
+# read images and write files
+curl localhost:5000/hubs/localhost:9092/topics/myimage_stream -N | while read -r l; do echo $l|base64 -d > image_$(date +%s+%3N.jpg) ; done
+
+```
+

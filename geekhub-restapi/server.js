@@ -3,6 +3,10 @@ var bodyParser = require('body-parser');
 
 var app = express();
 app.use(bodyParser.json())
+app.use(bodyParser.raw({
+  type: 'application/raw',
+  limit: '10mb'
+}))
 
 require('./routes')(app);
 

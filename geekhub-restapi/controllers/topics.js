@@ -48,7 +48,7 @@ exports.consume =  function(req, res){
 
   offset = false;
 
-  switch (req.headers['offset']){
+  switch (req.headers['cursor']){
     case "start": offset="erliest"; break;
     case "end": offset=false; break;
   }
@@ -86,7 +86,7 @@ exports.consume =  function(req, res){
 
 };
 exports.produce = function(req, res){
-  console.log (req.body )
+
   params = {
     broker: req.params.hub,
     topic: req.params.topic,
@@ -96,9 +96,23 @@ exports.produce = function(req, res){
    var client = new kafka.KafkaClient({kafkaHost: params.broker })
       producer = new Producer(client);
 
-  payloads = [
-      { topic: params.topic, messages: [ JSON.stringify( params.message) ] },
-  ];
+  payloads = []
+
+  switch(req.headers['content-type']) {
+    case "application/json": {
+        payloads = [
+             { topic: params.topic, messages: [ JSON.stringify( params.message) ] },
+        ];
+      break;
+    }
+    case "application/raw": {
+        payloads = [
+             { topic: params.topic, messages: [ params.message ] },
+        ];
+      break;
+    }
+  }
+
 
   producer.on('ready', function () {
       producer.send(payloads, function (err, data) {
