@@ -13,6 +13,6 @@ app.use(bodyParser.json())
 
 require('./routes')(app);
 
-app.listen(5000);
+app.listen(5000, '0.0.0.0');
 
 console.log("Geekhub\' runs on port 5000...");
