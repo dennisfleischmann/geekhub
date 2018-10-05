@@ -3,10 +3,21 @@
     <title>Test</title>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
     <script src="https://unpkg.com/vue-light-timeline@1.0.1/index.js"></script>
+
+    <style>
+        canvas#myChart{
+            height: 50% !important;
+            width: 100% !important;
+        }
+    </style>
 </head>
 
 <body>
+
+<canvas id="myChart"></canvas>
+
 <div id="app">
+
     <p>{{message}}</p>
     <ul>
         <li v-for="element in listElements">{{element}}</li>
@@ -20,56 +31,95 @@
     <light-timeline :items='items'></light-timeline>
 </div>
 
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.js"></script>
+
 <script>
 
-  Vue.component('light-timeline', vueLightTimeline.Timeline)
+    Vue.component('light-timeline', vueLightTimeline.Timeline)
 
-  const theme = 'red';
-  var app = new Vue({
-    el: '#app',
-    data: {
-      listElements: {},
-      message: 'hi there..',
-      items: [
-        {
-          tag: '2018-01-12',
-          content: 'hallo'
+    const theme = 'red';
+    var app = new Vue({
+        el: '#app',
+        data: {
+            listElements: {},
+            message: 'hi there..',
+            items: [],
+            chart: document.getElementById("myChart").getContext('2d'),
+            myChart: null
         },
-        {
-          tag: '2018-01-13',
-          color: '#dcdcdc',
-          type: 'circle',
-          content: 'world'
+        mounted: function(){
+            console.log('I am mounted')
+
+            const Http = new XMLHttpRequest();
+            // const url='http://localhost:5000/hubs/localhost:9092/topics/test1';
+            const url='http://192.168.13.229:5000/hubs/localhost:9092/topics/test1';
+            Http.open("GET", url);
+            Http.send();
+            Http.onreadystatechange = (e) => {
+                /* build a proper json object from response */
+                let bla = Http.responseText.replace(new RegExp('\n', 'g'), ',')
+                bla = bla.replace(',$', '')
+                bla = '{"something": [' + bla + ']}'
+                bla = bla.replace(',]', ']')
+                let leJson = JSON.parse(bla)
+
+                console.log('leJson: ', leJson.something)
+
+                /* assign to data */
+                this.listElements = leJson.something
+                this.items = this.listElements.filter(v => v.timeline).reverse()
+                this.barItems = this.listElements.filter(v => v.baritem)
+
+
+                this.updateChart()
+            }
+
+
+            this.myChart = new Chart(this.chart, {
+                type: 'bar',
+                data: {
+                    labels: ["Red", "Blue"],
+                    datasets: []
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero:true,
+                                max: 30
+                            }
+                        }]
+                    }
+                }
+            });
         },
-        {
-          type: 'star',
-          tag: '2018-01-14',
-          htmlMode: true,
-          content: `<div style="color: ${theme};"> =v = </div>`
+        methods: {
+            updateChart(){
+                console.log('Updating..')
+
+                let firstBar = this.barItems.filter(v => v.color == 'red')
+                let secondBar = this.barItems.filter(v => v.color == 'blue')
+
+                this.myChart.data.datasets = [{
+                    label: '# of Votes',
+                    data: [firstBar.length, secondBar.length],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255,99,132,1)',
+                        'rgba(54, 162, 235, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+
+                this.myChart.update(0)
+            }
         }
-      ]
-    },
-    mounted: function(){
-      console.log('I am mounted')
-
-      const Http = new XMLHttpRequest();
-      const url='http://localhost:5000/hubs/localhost:9092/topics/test1';
-      Http.open("GET", url);
-      Http.send();
-      Http.onreadystatechange = (e) => {
-        console.log(Http.responseText)
-
-        let bla = Http.responseText.replace(/}/g, '},')
-        bla = bla.slice(0, -2)
-        bla = '{"something": [' + bla + ']}'
-        let leJson = JSON.parse(bla)
-
-        this.listElements = leJson.something
-        this.items = this.listElements.filter(v => v.timeline)
-      }
-
-    }
-  })
+    })
 </script>
 </body>
 </html>
