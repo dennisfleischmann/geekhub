@@ -92,12 +92,23 @@ exports.produce = function(req, res){
     topic: req.params.topic,
   }
 
+  const fields = Object.keys(req.headers)
+  .filter(key => key.charAt(0) == 'f')
+  .reduce((obj, key) => {
+      return {
+        ...obj,
+        [key]: req.headers[key]
+      };
+    }, {});
+
+  console.log(fields)
+
   message = {
     uuid:     uuidgen(),
     hubid:    req.params.hub,
     topic:    req.params.topic,
     type:     req.headers['content-type'],
-    metadata:  {}
+    metadata: fields
   }
 
   var client = new kafka.KafkaClient({kafkaHost: params.broker })
