@@ -11,17 +11,21 @@ docker-compose up
 nodejs ./geekhub-restapi/server.js
 ```
 
-## Ingest some data into geekhub
-
-Ingested messages are embedded within a json structure.
-
+## Message structure
 ```
 {
+"uuid":"278cdec3-f602-4914-8552-cf12862904cb",
+"hubid":"localhost:9092",
+"topic":"blub4",
+"type":"text/html",
+"metadata":{},
+"payload": PAYLOAD
 }
 ```
 
 
->>>>>>> Stashed changes
+## Ingest some data into geekhub
+
 ```
 curl -H "Content-Type: application/json" -X POST localhost:5000/hubs/localhost:9092/topics/orders -d '{"orderid":"4"}'
 
