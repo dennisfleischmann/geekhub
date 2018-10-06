@@ -28,6 +28,18 @@ services:
       KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     volumes:
-      - /geekup/kafka1/data:/var/lib/kafka/data
+      - /geekhup/kafka1/data:/geekhub/kafka1
     depends_on:
       - zoo1
+
+  mongodb:
+    image: mongo:latest
+    container_name: "mongodb"
+    environment:
+    - MONGO_DATA_DIR=/geekhub/mongodb
+    - MONGO_LOG_DIR=/dev/null
+    volumes:
+    - /geekhub/monogdb:/geekhub/mongodb
+    ports:
+    - 27017:27017
+    command: mongod --smallfiles --logpath=/dev/null # --quiet
