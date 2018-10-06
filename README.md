@@ -31,6 +31,13 @@ curl -H "Content-Type: application/json" -X POST localhost:5000/hubs/localhost:9
 
 ```
 
+## Add some more metadata fields
+```
+curl -H "Content-Type: application/json" -X POST localhost:5000/hubs/localhost:9092/topics/orders -d '{"orderid":"4"}' \
+  -H Fmyfield:"test asdsa" -H Fmysecondfield:5
+
+```
+
 ## Use geekhub and transfer texts, json, xml, ..
 
 ### Use a cursor
