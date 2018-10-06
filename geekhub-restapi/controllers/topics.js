@@ -28,7 +28,6 @@ exports.allTopics = function(req, res){
       });
   });
 
-
 };
 exports.consume =  function(req, res){
   console.log(req.url)
@@ -75,7 +74,6 @@ exports.consume =  function(req, res){
     res.write('\n');
     console.log('ERROR: '+error.message);
   })
-
   consumer.on('message', function (message) {
     res.write(
       `${message.value}`
