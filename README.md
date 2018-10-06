@@ -4,7 +4,7 @@
 Docker = 17.12.1
 Docker-Compose = 1.17.1
 
-## Run geekhub as standalone locally
+## Run geekhub locally as an standalone
 ```
 git clone
 docker-compose up
@@ -14,12 +14,12 @@ nodejs ./geekhub-restapi/server.js
 ## Message structure
 ```
 {
-"uuid":"278cdec3-f602-4914-8552-cf12862904cb",
-"hubid":"localhost:9092",
-"topic":"blub4",
-"type":"text/html",
-"metadata":{},
-"payload": PAYLOAD
+  "uuid":"278cdec3-f602-4914-8552-cf12862904cb",
+  "hubid":"localhost:9092",
+  "topic":"blub4",
+  "type":"text/html",
+  "metadata":{},
+  "payload": PAYLOAD
 }
 ```
 
