@@ -11,10 +11,13 @@ docker-compose up
 nodejs ./geekhub-restapi/server.js
 ```
 
-## Ingest some records into geekhub
+## Ingest some data into geekhub
 ```
+# JSON formated
 curl -H "Content-Type: application/json" -X POST localhost:5000/hubs/localhost:9092/topics/orders -d '{"orderid":"4"}'
 
+# Any text format
+curl -H "Content-Type: text/html" -X POST localhost:5000/hubs/localhost:9092/topics/mymessages -d 'This is my message'
 ```
 
 ## Use geekhub and transfer texts, json, xml, ..
@@ -33,47 +36,41 @@ curl localhost:5000/hubs/localhost:9092/topics/orders  -H groupid:mapviewer
 
 ```
 
-## Use geekhub to transfer images
+## Use geekhub transfering binary data / images
 
+This process takes an image
 ```
 # write
-cat ~/Pictures/Hamburg_Hafen_3.jpg | \
-  base64 -w 0 | \
-  curl -H "Content-Type: application/raw" \
-  -X POST localhost:5000/hubs/localhost:9092/topics/myimage_stream --data-binary @-
+cat myimage.jpg | \
+  curl  -H "Content-Type: application/raw" \
+        -X POST localhost:5000/hubs/localhost:9092/topics/myimagestream \
+        --data-binary @-
 
 
 # read images and write files
-curl localhost:5000/hubs/localhost:9092/topics/myimage_stream -N | \
- while read -r l; do echo $l|base64 -d > image_$(date +%s+%3N.jpg) ; done
+curl -s localhost:5000/hubs/localhost:9092/topics/myimagestream3 -N -H cursor:start | jq --unbuffered -r '.payload' | \
+  while read -r l; do echo $l|base64 -d > image_$(date +%s+%3N.jpg) ; done
 
 ```
 
-## Use geekhub to transfer webcam images
+
+## Use geekhub transfering webcam images
 
 ```
-# capture image from webcam
+# capture image every second from webcam
+while sleep 1; do \
 fswebcam - | \
-  base64 -w 0 | \
-  curl -H "Content-Type: application/raw" \
-  -X POST localhost:5000/hubs/localhost:9092/topics/myimage_stream --data-binary @-
+  curl  -H "Content-Type: application/raw" \
+        -X POST localhost:5000/hubs/localhost:9092/topics/mywebcamstream \
+        --data-binary @- \
+  done;
+
 
 # read images and write files
-curl localhost:5000/hubs/localhost:9092/topics/myimage_stream -N | \
- while read -r l; do echo $l|base64 -d > image_$(date +%s+%3N.jpg) ; done
+curl -s localhost:5000/hubs/localhost:9092/topics/mywebcamstream -N -H cursor:start | jq --unbuffered -r '.payload' | \
+  while read -r l; do echo $l|base64 -d > image.jpg ; done;
 
-```
-
-## Use geekhub to stream webcam images every second
-```
-
-# create webcam image stream
-while sleep 1; do fswebcam - |   base64 -w 0 |   curl -H "Content-Type: application/raw"  \
-  -X POST localhost:5000/hubs/localhost:9092/topics/webcam --data-binary @-; done
-
-
-# read the webcam image stream
-curl localhost:5000/hubs/localhost:9092/topics/webcam -N | while read -r l; do echo $l|base64 -d > image.jpg ; done
+gopen image.jpg
 
 ```
 
@@ -81,12 +78,20 @@ curl localhost:5000/hubs/localhost:9092/topics/webcam -N | while read -r l; do e
 ## Encrypt data end-to-end
 ```
 # write an encrpyted image into the topic
-while sleep 1; do fswebcam - | openssl enc -aes-256-cbc -pass pass:secret | base64 -w 0 |  \
-  curl -H "Content-Type: application/raw"    -X POST localhost:5000/hubs/localhost:9092/topics/webcam_enc --data-binary @-; done
+
+while sleep 1; do \
+fswebcam - | openssl enc -aes-256-cbc -pass pass:secret | \
+  curl  -H "Content-Type: application/raw" \
+        -X POST localhost:5000/hubs/localhost:9092/topics/mywebcamstream_encrpyted \
+        --data-binary @- ; \
+  done;
 
 
 # read the image and decrypt it
-curl localhost:5000/hubs/localhost:9092/topics/webcam_enc -N | while read -r l; do echo $l|base64 -d| \
-  openssl enc -d -aes-256-cbc -pass pass:secret > image.jpg ; done
+curl -s localhost:5000/hubs/localhost:9092/topics/mywebcamstream_encrpyted -N -H cursor:start \
+| jq --unbuffered -r '.payload' |   while read -r l; do echo $l|base64 -d \
+| openssl enc -d -aes-256-cbc -pass pass:secret > image.jpg ; done;
+
+gopen image.jpg
 
 ```

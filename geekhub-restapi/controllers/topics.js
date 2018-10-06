@@ -3,6 +3,7 @@ var kafka = require('kafka-node'),
     Producer = kafka.Producer;
 
 const _ = require('lodash');
+const uuidgen = require('uuid/v4');
 
 exports.allTopics = function(req, res){
   params = {
@@ -77,6 +78,7 @@ exports.consume =  function(req, res){
   })
 
   consumer.on('message', function (message) {
+
     res.write(
       `${message.value}`
     );
@@ -90,36 +92,58 @@ exports.produce = function(req, res){
   params = {
     broker: req.params.hub,
     topic: req.params.topic,
-    message: req.body
   }
 
-   var client = new kafka.KafkaClient({kafkaHost: params.broker })
+  message = {
+    uuid:     uuidgen(),
+    hubid:    req.params.hub,
+    topic:    req.params.topic,
+    type:     req.headers['content-type'],
+    metadata:  {}
+  }
+
+  var client = new kafka.KafkaClient({kafkaHost: params.broker })
       producer = new Producer(client);
 
-  payloads = []
+  kafka_payloads = []
 
   switch(req.headers['content-type']) {
     case "application/json": {
-        payloads = [
-             { topic: params.topic, messages: [ JSON.stringify( params.message) ] },
+        message.payload = req.body
+        kafka_payloads = [
+             { topic: params.topic, messages: [ JSON.stringify( message) ] },
         ];
       break;
     }
     case "application/raw": {
-        payloads = [
-             { topic: params.topic, messages: [ params.message ] },
+        message.payload = req.body.toString('base64')
+        kafka_payloads = [
+             { topic: params.topic, messages: [ JSON.stringify( message ) ] },
         ];
       break;
     }
+    case "text/html": {
+        message.payload = req.body.toString()
+        kafka_payloads = [
+             { topic: params.topic, messages: [ JSON.stringify( message ) ] },
+        ];
+      break;
+    }
+    default:
+      console.log("Error: Not supported content-type")
+      res.write("Not supported content-type")
+      res.end()
+      return 0;
+      break;
   }
-
-
   producer.on('ready', function () {
-      producer.send(payloads, function (err, data) {
+      producer.send(kafka_payloads, function (err, data) {
           res.end()
       });
   });
-  producer.on('error', function (err) {})
+  producer.on('error', function (err) {
+     console.err("ERROR: producer send")
+  })
 };
 exports.delete = function(req, res){
 };
