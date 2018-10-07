@@ -101,8 +101,7 @@ exports.produce = function(req, res){
       };
     }, {});
 
-  console.log(fields)
-
+  // define message
   message = {
     uuid:     uuidgen(),
     hubid:    req.params.hub,

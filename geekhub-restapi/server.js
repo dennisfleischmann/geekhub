@@ -12,7 +12,6 @@ app.use(bodyParser.raw({ type: 'application/raw' }))
 // parse an HTML body into a string
 app.use(bodyParser.text({ type: 'text/html' }))
 
-
 require('./routes')(app);
 
 app.listen(5000);
