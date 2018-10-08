@@ -46,6 +46,13 @@ exports.consume =  function(req, res){
     'Cache-Control': 'no-cache'
   });
 
+  offset = false;
+
+  switch (req.headers['offset']){
+    case "start": offset="erliest"; break;
+    case "end": offset=false; break;
+  }
+
   client = new kafka.KafkaClient({kafkaHost: params.broker });
   consumer = new Consumer(
     client,
@@ -53,11 +60,11 @@ exports.consume =  function(req, res){
         { topic: params.topic },
     ],
     {
-      groupId: "test1",
+      groupId: req.headers['groupid'],
       autoCommit: true,
       autoCommitIntervalMs: 100,
       fetchMaxWaitMs: 100,
-      fromOffset: "earliest"
+      fromOffset: offset
     }
   );
 
@@ -86,9 +93,8 @@ exports.produce = function(req, res){
     message: req.body
   }
 
-  var KeyedMessage = kafka.KeyedMessage,
-      client = new kafka.KafkaClient({kafkaHost: params.broker });
-      producer = new Producer(client),
+   var client = new kafka.KafkaClient({kafkaHost: params.broker })
+      producer = new Producer(client);
 
   payloads = [
       { topic: params.topic, messages: [ JSON.stringify( params.message) ] },
